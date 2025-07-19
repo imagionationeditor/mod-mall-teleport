@@ -1,0 +1,113 @@
+#
+# Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license
+#
+# Mall Teleport Module Configuration File
+#
+
+[worldserver]
+
+################################################################################
+# MALL TELEPORT MODULE SETTINGS
+#
+# MallTeleport.Enable
+#        Description: Enable the Mall Teleport module
+#        Default:     1 (Enabled)
+#                     0 (Disabled)
+
+MallTeleport.Enable = 1
+
+#
+# MallTeleport.RequireLevel
+#        Description: Minimum level required to use mall teleport
+#        Default:     1
+#        Range:       1-80
+
+MallTeleport.RequireLevel = 1
+
+#
+# MallTeleport.CooldownTime
+#        Description: Cooldown time in seconds between teleports
+#        Default:     0 (No cooldown)
+#        Range:       0-3600
+
+MallTeleport.CooldownTime = 0
+
+#
+# MallTeleport.Cost.Enable
+#        Description: Enable cost for teleportation
+#        Default:     0 (Disabled)
+#                     1 (Enabled)
+
+MallTeleport.Cost.Enable = 0
+
+#
+# MallTeleport.Cost.Gold
+#        Description: Gold cost for regular mall teleport (in copper)
+#        Default:     0
+#        Range:       0-999999999
+
+MallTeleport.Cost.Gold = 0
+
+#
+# MallTeleport.Cost.VIPGold
+#        Description: Gold cost for VIP mall teleport (in copper)
+#        Default:     0
+#        Range:       0-999999999
+
+MallTeleport.Cost.VIPGold = 0
+
+#
+# MallTeleport.Combat.Block
+#        Description: Block teleportation during combat
+#        Default:     1 (Enabled)
+#                     0 (Disabled)
+
+MallTeleport.Combat.Block = 1
+
+#
+# MallTeleport.Locations.Regular
+#        Description: Name of the teleport location for regular mall in game_tele table
+#        Default:     "PlayerMall"
+
+MallTeleport.Locations.Regular = "PlayerMall"
+
+#
+# MallTeleport.Locations.VIP
+#        Description: Name of the teleport location for VIP mall in game_tele table
+#        Default:     "VIPMall"
+
+MallTeleport.Locations.VIP = "VIPMall"
+
+#
+# MallTeleport.Messages.Enable
+#        Description: Enable informational messages
+#        Default:     1 (Enabled)
+#                     0 (Disabled)
+
+MallTeleport.Messages.Enable = 1
+
+#
+# MallTeleport.Messages.LoginNotice
+#        Description: Show message to players on login
+#        Default:     1 (Enabled)
+#                     0 (Disabled)
+
+MallTeleport.Messages.LoginNotice = 1
+
+#
+# MallTeleport.Security.GMOnly
+#        Description: Restrict teleport commands to GM+ only
+#        Default:     0 (All players can use)
+#                     1 (GM+ only)
+
+MallTeleport.Security.GMOnly = 0
+
+#
+# MallTeleport.VIP.RequireTable
+#        Description: Require premium table check for VIP access
+#        Default:     1 (Enabled)
+#                     0 (Disabled - all players can use VIP)
+
+MallTeleport.VIP.RequireTable = 1
+
+################################################################################
