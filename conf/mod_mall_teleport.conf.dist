@@ -1,113 +1,162 @@
 #
 # Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license
 #
-# Mall Teleport Module Configuration File
+# ==============================================================================
+#  MALL TELEPORT MODULE - Configuration File
+#  Rewritten by Mojispectre
+# ==============================================================================
+#
+#  This module adds two chat commands, .M and .vM, that teleport a player
+#  to a "mall" location (a shop hub, generally set up with vendors, banks,
+#  trainers, etc). A regular mall and a VIP mall are supported separately,
+#  each with their own destination, cooldown behavior, and bypass cost.
+#
+#  HOW COOLDOWN + COST WORK TOGETHER
+#  ----------------------------------
+#    - If the cooldown has expired (or CooldownTime = 0), teleporting is
+#      always FREE, and the cooldown timer resets.
+#    - If the cooldown is still active, the player is blocked UNLESS the
+#      cost system is enabled and they can afford the bypass cost, in
+#      which case they teleport immediately and gold is deducted.
+#    - Gold is only ever deducted AFTER a successful teleport, never
+#      taken up front and never taken for a free (post-cooldown) trip.
+#
+#  Copy this file to conf/mod_mall_teleport.conf and edit as needed.
 #
 
 [worldserver]
 
 ################################################################################
-# MALL TELEPORT MODULE SETTINGS
-#
-# MallTeleport.Enable
-#        Description: Enable the Mall Teleport module
-#        Default:     1 (Enabled)
-#                     0 (Disabled)
+# GENERAL
+################################################################################
 
+# MallTeleport.Enable
+#   Description: Master switch for the whole module. When disabled, both
+#                .M and .vM report that the module is off and do nothing.
+#   Default:     1 (Enabled)
 MallTeleport.Enable = 1
 
-#
 # MallTeleport.RequireLevel
-#        Description: Minimum level required to use mall teleport
-#        Default:     1
-#        Range:       1-80
-
+#   Description: Minimum character level required to use either mall
+#                command. Applies to both the regular and VIP mall.
+#   Default:     1
+#   Range:       1-80
 MallTeleport.RequireLevel = 1
 
-#
 # MallTeleport.CooldownTime
-#        Description: Cooldown time in seconds between teleports
-#        Default:     0 (No cooldown)
-#        Range:       0-3600
-
+#   Description: Time, in seconds, a player must wait between free
+#                teleports. Set to 0 to remove the cooldown entirely
+#                (teleports are always free and instant).
+#                This single value applies to both .M and .vM, tracked
+#                separately per command.
+#   Default:     0 (No cooldown)
+#   Range:       0-3600
 MallTeleport.CooldownTime = 0
 
+################################################################################
+# COST SYSTEM
 #
-# MallTeleport.Cost.Enable
-#        Description: Enable cost for teleportation
-#        Default:     0 (Disabled)
-#                     1 (Enabled)
+# The cost system only ever charges gold to bypass an active cooldown.
+# It has no effect at all while CooldownTime = 0, since there is never
+# a cooldown to bypass.
+################################################################################
 
+# MallTeleport.Cost.Enable
+#   Description: When enabled, a player whose cooldown is still active
+#                may pay gold to teleport immediately instead of waiting.
+#                When disabled, a player on cooldown simply has to wait;
+#                no amount of gold will let them bypass it.
+#   Default:     0 (Disabled)
 MallTeleport.Cost.Enable = 0
 
-#
 # MallTeleport.Cost.Gold
-#        Description: Gold cost for regular mall teleport (in copper)
-#        Default:     0
-#        Range:       0-999999999
-
+#   Description: Cost, in copper, to bypass an active cooldown on the
+#                REGULAR mall (.M). 10000 copper = 1 gold.
+#                Setting this to 0 means the regular mall cannot be
+#                bypassed even if Cost.Enable = 1 (players must wait).
+#   Default:     0
+#   Example:     100000  (= 10 gold)
 MallTeleport.Cost.Gold = 0
 
-#
 # MallTeleport.Cost.VIPGold
-#        Description: Gold cost for VIP mall teleport (in copper)
-#        Default:     0
-#        Range:       0-999999999
-
+#   Description: Cost, in copper, to bypass an active cooldown on the
+#                VIP mall (.vM). Same rules as Cost.Gold above.
+#   Default:     0
+#   Example:     50000  (= 5 gold)
 MallTeleport.Cost.VIPGold = 0
 
+################################################################################
+# LOCATIONS
 #
-# MallTeleport.Combat.Block
-#        Description: Block teleportation during combat
-#        Default:     1 (Enabled)
-#                     0 (Disabled)
-
-MallTeleport.Combat.Block = 1
-
+# Each location accepts one of two formats:
 #
+#   1. game_tele name  (recommended)
+#      The name of an existing entry in the `game_tele` table.
+#      Create one in-game while standing at the target spot:
+#        .tele add PlayerMall
+#
+#   2. Raw coordinates
+#      Format: "map:x:y:z:orientation"
+#      Useful if you don't want to touch the game_tele table at all.
+################################################################################
+
 # MallTeleport.Locations.Regular
-#        Description: Name of the teleport location for regular mall in game_tele table
-#        Default:     "PlayerMall"
-
+#   Description: Destination for the regular mall (.M command).
+#   Default:     "PlayerMall"
+#   Example:     "PlayerMall"
+#   Example:     "0:-8833.38:628.628:94.0066:1.0"
 MallTeleport.Locations.Regular = "PlayerMall"
 
-#
 # MallTeleport.Locations.VIP
-#        Description: Name of the teleport location for VIP mall in game_tele table
-#        Default:     "VIPMall"
-
+#   Description: Destination for the VIP mall (.vM command).
+#   Default:     "VIPMall"
+#   Example:     "VIPMall"
 MallTeleport.Locations.VIP = "VIPMall"
 
-#
-# MallTeleport.Messages.Enable
-#        Description: Enable informational messages
-#        Default:     1 (Enabled)
-#                     0 (Disabled)
+################################################################################
+# MESSAGES
+################################################################################
 
+# MallTeleport.Messages.Enable
+#   Description: Master switch for the module's informational chat
+#                messages (cost confirmations, etc). Error/denial
+#                messages (level too low, in combat, ...) always show
+#                regardless of this setting, since the player needs to
+#                know why the command failed.
+#   Default:     1 (Enabled)
 MallTeleport.Messages.Enable = 1
 
-#
 # MallTeleport.Messages.LoginNotice
-#        Description: Show message to players on login
-#        Default:     1 (Enabled)
-#                     0 (Disabled)
-
+#   Description: Show a one-time reminder in chat when a player logs in,
+#                pointing them to .M / .vM. Requires Messages.Enable = 1.
+#   Default:     1 (Enabled)
 MallTeleport.Messages.LoginNotice = 1
 
-#
-# MallTeleport.Security.GMOnly
-#        Description: Restrict teleport commands to GM+ only
-#        Default:     0 (All players can use)
-#                     1 (GM+ only)
+################################################################################
+# SECURITY
+################################################################################
 
+# MallTeleport.Combat.Block
+#   Description: Prevent teleportation while the player is in combat.
+#                Applies to both .M and .vM.
+#   Default:     1 (Enabled)
+MallTeleport.Combat.Block = 1
+
+# MallTeleport.Security.GMOnly
+#   Description: Restrict both commands to accounts with GM security
+#                level or above (checked via account security, not the
+#                in-game GM tag toggle). Useful for staff-only testing.
+#   Default:     0 (All players)
 MallTeleport.Security.GMOnly = 0
 
-#
 # MallTeleport.VIP.RequireTable
-#        Description: Require premium table check for VIP access
-#        Default:     1 (Enabled)
-#                     0 (Disabled - all players can use VIP)
-
-MallTeleport.VIP.RequireTable = 1
+#   Description: When enabled, .vM checks the `premium` table and only
+#                lets players with an active row through.
+#                VIP is currently unused/unconfigured on this server, so
+#                this defaults to OFF — anyone can use .vM. Flip this to
+#                1 once you actually start populating the `premium`
+#                table with paying/whitelisted accounts.
+#   Default:     0 (Disabled — VIP mall open to everyone)
+MallTeleport.VIP.RequireTable = 0
 
 ################################################################################
